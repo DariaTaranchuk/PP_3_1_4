@@ -35,31 +35,31 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User getUser(Long id) {
-        User userById = userRepository.getOne(id);
-        return userById;
+        User user = userRepository.findById(id).orElseThrow();
+        user.getRoles().size();
+        return user;
     }
 
     @Transactional
     @Override
     public void createUser(User user, List<Long> rolesId) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
-        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> roles = (Set<Role>) roleRepository.findByIdIn(rolesId);
-        user.getRoles().addAll(roles);
+        Set<Role> roles = roleRepository.findByIdIn(rolesId);
+        user.setRoles(roles);
         userRepository.save(user);
     }
 
     @Transactional
     @Override
-    public void updateUser(Long id, User updateUser) {
-        User userToBeUpdated = userRepository.getOne(id);
+    public void updateUser(Long id, User updateUser, List<Long> rolesId) {
+        User userToBeUpdated = getUser(id);
         userToBeUpdated.setName(updateUser.getName());
         userToBeUpdated.setSurname(updateUser.getSurname());
         userToBeUpdated.setAge(updateUser.getAge());
-        userToBeUpdated.setUsername(updateUser.getUsername());
+        userToBeUpdated.setEmail(updateUser.getEmail());
         userToBeUpdated.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+        Set<Role> roles = roleRepository.findByIdIn(rolesId);
+        userToBeUpdated.setRoles(roles);
         userRepository.save(userToBeUpdated);
     }
 
@@ -69,8 +69,8 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+
+    public User findByUsername(String email) {
+        return userRepository.findByUsername(email);
     }
 }

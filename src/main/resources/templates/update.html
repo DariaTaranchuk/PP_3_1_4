@@ -29,6 +29,11 @@
     <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</div>
     <br/>
 
+    <label for="email">Enter e-mail: </label>
+    <input id="email" th:field="*{email}" th:value="*{email}" type="text"/>
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>
+    <br/>
+
     <label for="password">Enter new password:</label>
     <input type="password" th:field="*{password}" id="password" value="" placeholder="Введите новый пароль"/>
     <br/>

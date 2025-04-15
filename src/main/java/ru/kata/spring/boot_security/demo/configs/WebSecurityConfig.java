@@ -9,19 +9,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.kata.spring.boot_security.demo.service.UserDetailServiceImpl;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.UserRepositoryServiceImpl;
 
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserDetailServiceImpl userService;
+    private final UserRepositoryServiceImpl userService;
 
     private final AuthenticationSuccessHandler successUserHandler;
 
-    public WebSecurityConfig(UserDetailServiceImpl userService, AuthenticationSuccessHandler successUserHandler) {
+    public WebSecurityConfig(UserRepositoryServiceImpl userService, AuthenticationSuccessHandler successUserHandler) {
         this.userService = userService;
         this.successUserHandler = successUserHandler;
     }

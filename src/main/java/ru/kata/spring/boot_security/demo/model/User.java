@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -32,16 +32,16 @@ public class User {
     @Column
     private Integer age;
 
-    @NotNull(message = "Поле не может быть пустым")
-    @Column(unique = true)
-    private String username;
+    @NotEmpty(message = "Поле не может быть пустым")
+    @Pattern(regexp = "^[\\w-\\.]+@[\\w-]+(\\.[\\w-]+)*\\.[a-z]{2,}$", message = "Введите корректный e-mail")
+    @Column
+    private String email;
 
-    @NotNull(message = "Поле не может быть пустым")
     @Column
     private String password;
 
     @Column
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(
@@ -64,7 +64,7 @@ public class User {
         this.age = age;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -96,14 +96,6 @@ public class User {
         this.age = age;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -118,5 +110,13 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -16,6 +16,8 @@
         <th>Фамилия</th>
         <th>Возраст</th>
         <th>Имя пользователя</th>
+        <th>Почта</th>
+        <th>Роль</th>
       </tr>
       </thead>
       <tbody>
@@ -24,6 +26,8 @@
         <td th:text="${user.getSurname()}"></td>
         <td th:text="${user.getAge()}"></td>
         <td th:text="${user.getUsername()}"></td>
+        <td th:text="${user.getEmail()}"></td>
+        <td th:text="${user.getRoles()}"></td>
         <td><a th:href="@{admin/update(id=${user.id})}">Править</a></td>
         <td><a th:href="@{admin/delete(id=${user.id})}">Удалить</a></td>
       </tr>

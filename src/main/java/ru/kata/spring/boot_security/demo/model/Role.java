@@ -3,9 +3,6 @@ package ru.kata.spring.boot_security.demo.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.io.Serializable;
-import java.util.Set;
-
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
@@ -50,7 +47,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.name.replace("ROLE_", "");
     }
 
     @Override
@@ -76,5 +73,9 @@ public class Role implements GrantedAuthority {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public String getDisplayName() {
+        return this.name.replace("ROLE_", "");
     }
 }

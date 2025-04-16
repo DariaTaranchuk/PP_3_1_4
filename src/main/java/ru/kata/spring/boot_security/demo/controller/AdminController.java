@@ -1,18 +1,16 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleRepositoryServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserRepositoryServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -42,12 +40,8 @@ public class AdminController {
     }
 
     @PostMapping()
-    public String create(@ModelAttribute("user") @Valid User user,
-                         BindingResult bindingResult, Model model, @RequestParam("roles") List<Long> rolesId) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleRepository.findAll());
-            return "list1";
-        }
+    public String create(@ModelAttribute("user") User user,
+                          @RequestParam(value = "roles", defaultValue = "1") List<Long> rolesId) {
         userService.createUser(user, rolesId);
         return "redirect:/admin";
         }
@@ -60,18 +54,22 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("user") @Valid User user,
-                         BindingResult bindingResult, @RequestParam("roles") List<Long> rolesId) {
-        if(bindingResult.hasErrors()) {
-            return "list1";
-        }
+    public String update(@ModelAttribute("user") User user,
+                         @RequestParam(value = "roles", defaultValue = "1") List<Long> rolesId) {
         userService.updateUser(user.getId(), user, rolesId);
         return "redirect:/admin";
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam(value = "id") long id) {
-        userService.deleteUser(id);
+    public String delete(@RequestParam(value = "id") long id, Model model) {
+        model.addAttribute("user", userService.getUser(id));
+        return "list1";
+    }
+
+    @PostMapping("/delete")
+    public String delete(@ModelAttribute("user") User user,
+                         @RequestParam(value = "roles" , defaultValue = "1") List<Long> rolesId) {
+        userService.deleteUser(user.getId());
         return "redirect:/admin";
     }
 }

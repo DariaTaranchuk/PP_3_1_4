@@ -1,11 +1,6 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -17,23 +12,15 @@ public class User{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotEmpty(message = "Поле не может быть пустым")
-    @Pattern(regexp = "^[а-яА-ЯёЁa-zA-Z]+$", message = "Имя не может содержать символы отличные от букв")
     @Column
     private String name;
 
-    @NotEmpty(message = "Поле не может быть пустым")
-    @Pattern(regexp = "^[а-яА-ЯёЁa-zA-Z]+$", message = "Имя не может содержать символы отличные от букв")
     @Column
     private String surname;
 
-    @NotNull(message = "Поле не может быть пустым")
-    @Min(value = 0, message = "Возраст должен быть больше нуля")
     @Column
     private Integer age;
 
-    @NotEmpty(message = "Поле не может быть пустым")
-    @Pattern(regexp = "^[\\w-\\.]+@[\\w-]+(\\.[\\w-]+)*\\.[a-z]{2,}$", message = "Введите корректный e-mail")
     @Column
     private String email;
 
@@ -53,7 +40,7 @@ public class User{
                     referencedColumnName = "id"
             )
     )
-    private Set<Role> roles = new HashSet<>(); ;
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }

@@ -1,78 +1,101 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import ru.kata.spring.boot_security.demo.model.Role;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
-public class UserServiceImpl implements UserService {
-
+@Transactional
+public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
-    @Override
-    public List<User> showAllUsers() {
+
+    public User findByUserName(String username) {
+        return userRepository.findByUsername(username);
+
+    }
+
+    public List<User> findAllUsers() {
         List<User> users = userRepository.findAll();
         return users;
     }
 
-    @Transactional
+    public User saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
     @Override
-    public User getUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        user.getRoles().size();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("user not found ");
+        }
         return user;
     }
 
-    @Transactional
-    @Override
-    public void createUser(User user, List<Long> rolesId) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> roles = roleRepository.findByIdIn(rolesId);
-        user.setRoles(roles);
-        userRepository.save(user);
-    }
+    public User updateUser(User updatedUser, String newPassword) {
+        try {
+            User existingUser = userRepository.findById(updatedUser.getId())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    @Transactional
-    @Override
-    public void updateUser(Long id, User updateUser, List<Long> rolesId) {
-        User userToBeUpdated = getUser(id);
-        userToBeUpdated.setName(updateUser.getName());
-        userToBeUpdated.setSurname(updateUser.getSurname());
-        userToBeUpdated.setAge(updateUser.getAge());
-        userToBeUpdated.setEmail(updateUser.getEmail());
-        if (updateUser.getPassword() != null && !updateUser.getPassword().isEmpty()) {
-            userToBeUpdated.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+            if (!existingUser.getEmail().equals(updatedUser.getEmail())) {
+                User userByEmail = userRepository.findByUsername(updatedUser.getEmail());
+                if (userByEmail != null && !userByEmail.getId().equals(existingUser.getId())) {
+                    throw new IllegalArgumentException("Email already taken");
+                }
+            }
+            existingUser.setAge(updatedUser.getAge());
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setName(updatedUser.getName());
+            existingUser.setSurname(updatedUser.getSurname());
+
+            if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+                existingUser.setRoles(updatedUser.getRoles());
+            }
+
+            if (newPassword != null && !newPassword.isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(newPassword));
+            }
+
+            User savedUser = userRepository.save(existingUser);
+
+            return savedUser;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-        Set<Role> roles = roleRepository.findByIdIn(rolesId);
-        userToBeUpdated.setRoles(roles);
-        userRepository.save(userToBeUpdated);
     }
 
-    @Transactional
-    @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 
-    public User findByUsername(String email) {
-        return userRepository.findByUsername(email);
+    @Override
+    public boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+    }
+
+    @Override
+    public boolean hasRole(User user, String roleName) {
+        return user.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
     }
 }

@@ -74,8 +74,4 @@ public class Role implements GrantedAuthority {
             return false;
         return true;
     }
-
-    public String getDisplayName() {
-        return this.name.replace("ROLE_", "");
-    }
 }

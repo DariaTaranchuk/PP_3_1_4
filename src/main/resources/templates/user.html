@@ -1,78 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
-            crossorigin="anonymous"></script>
-    <title>User page</title>
+    <title>User Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/user.js"></script>
+    <style>
+        .full-height-sidebar {
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .custom-list-group .list-group-item {
+            border: none;
+            background: transparent;
+        }
+
+        .custom-list-group .list-group-item.active {
+            background-color: rgb(43, 60, 177);
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<div class="container-fluid mt-3">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-0">
+    <div class="container-fluid">
+        <span class="navbar-brand">
+            <span id="currentUserEmail" class="fw-bold"></span>
+            with roles:
+            <span id="currentUserRoles"></span>
+        </span>
+        <form id="logoutForm">
+            <button type="submit" class="btn btn-outline-light">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="p-3 mb-2 bg-secondary text-white">
-                <b th:text="${currentUser.email}"></b>
-                <span> with roles: </span>
-                <th:block th:each="role: ${currentUser.roles}">
-                    <span th:text="${role.displayName}"></span>
-                </th:block>
-                <a class="float-end text-white-50 text-decoration-none" th:href="@{/logout}" type="submit">Logout</a>
+        <!-- Боковая панель навигации -->
+        <div class="col-md-2 full-height-sidebar p-0">
+            <div class="sticky-top pt-4">
+                <div class="list-group custom-list-group">
+                    <a href="/user" class="list-group-item list-group-item-action active">User</a>
+                </div>
             </div>
         </div>
-        <div class="col-lg-2">
-            <ul class="nav flex-column nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link active" id="user-tab" data-bs-toggle="tab"
-                       data-bs-target="#user" type="button" role="tab" aria-controls="user">User
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-lg-10">
-            <div class="tab-content">
-                <div class="tab-pane fade show active border-bottom rounded" id="user" role="tabpanel"
-                     aria-labelledby="user-tab">
-                    <h1 class="p-2">User information-page</h1>
-                    <div class="p-0 border">
-                        <h4 class="bg-light p-3 mb-0 rounded">About user</h4>
-                        <div class="border rounded p-3">
-                            <table class="table table-striped border-top">
-                                <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">First Name</th>
-                                    <th scope="col">Last Name</th>
-                                    <th scope="col">Age</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Role</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td th:text="${currentUser.getId()}"></td>
-                                    <td th:text="${currentUser.getName()}"></td>
-                                    <td th:text="${currentUser.getSurname()}"></td>
-                                    <td th:text="${currentUser.getAge()}"></td>
-                                    <td th:text="${currentUser.getEmail()}"></td>
-                                    <td>
-                                <span th:each="roles : ${currentUser.getRoles()}"
-                                      th:text="${roles.displayName}+'   '">
-                                      Roles
-                                    </span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+
+        <!-- Основное содержимое -->
+        <div class="col-md-10 main-content">
+            <h2 class="fw-semibold mb-4 text-dark">User information-page</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="fw-medium mb-0">About user</h4>
+                </div>
+
+                <div class="card-body tab-content">
+                    <!-- Вкладка таблицы пользователей -->
+                    <div class="tab-pane fade show active" id="usersTable">
+                        <table class="table table-striped">
+                            <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                            </tr>
+                            </thead>
+                            <tbody id="usersTableBodyById">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/user.js"></script>
 </body>
 </html>
